@@ -1,0 +1,31 @@
+{
+  "name": "create-tstack-web3",
+  "version": "0.1.0",
+  "description": "Scaffold a TanStack Start + wagmi + Hardhat 3 web3 app — typed end-to-end.",
+  "type": "module",
+  "bin": {
+    "create-tstack-web3": "index.mjs"
+  },
+  "files": [
+    "index.mjs"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "create",
+    "web3",
+    "ethereum",
+    "tanstack-start",
+    "wagmi",
+    "hardhat",
+    "starter",
+    "scaffold"
+  ],
+  "license": "MIT",
+  "author": "Steven Li",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lxzxl/create-tstack-web3.git"
+  }
+}
