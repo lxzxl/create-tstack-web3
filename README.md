@@ -18,9 +18,10 @@ pnpm dev:all     # local chain + deploy + codegen + web on http://localhost:3000
 
 ## What it does
 
-Fetches the [`tanstack-web3-starter`](https://github.com/lxzxl/tanstack-web3-starter)
-template, extracts it into your new directory, and sets the project name. Generated
-code and `node_modules` are not included — they're created on first `pnpm dev`/`build`.
+Fetches the latest released [`tanstack-web3-starter`](https://github.com/lxzxl/tanstack-web3-starter)
+template (falls back to `main`), extracts it into your new directory, sets the project
+name, and runs `git init`. Generated code and `node_modules` are not included — they're
+created on first `pnpm dev`/`build`.
 
 ## Zero dependencies
 
@@ -30,7 +31,7 @@ Windows 10+ ships it too).
 
 ## Options
 
-- `TEMPLATE_REF=<branch|tag>` — scaffold from a specific template ref (default `main`).
+- `TEMPLATE_REF=<branch|tag>` — scaffold from a specific template ref (default: the latest release tag, then `main`).
 
 ## License
 

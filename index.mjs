@@ -17,7 +17,27 @@ import { argv, exit, stdin, stdout } from "node:process";
 import { createInterface } from "node:readline/promises";
 
 const REPO = "lxzxl/tanstack-web3-starter";
-const REF = process.env.TEMPLATE_REF || "main";
+
+// Resolve which ref to scaffold: TEMPLATE_REF override → latest release tag → main.
+// Pinning to a release means a broken `main` never breaks `npm create`.
+async function resolveRef() {
+  if (process.env.TEMPLATE_REF) return process.env.TEMPLATE_REF;
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
+      headers: {
+        accept: "application/vnd.github+json",
+        "user-agent": "create-tstack-web3",
+      },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.tag_name) return data.tag_name;
+    }
+  } catch {
+    // fall through to main
+  }
+  return "main";
+}
 
 const C = {
   reset: "\x1b[0m",
@@ -61,8 +81,9 @@ async function main() {
     fail(`Directory "${target}" already exists and is not empty.`);
   }
 
-  console.log(`${C.dim}Fetching template ${REPO}@${REF}…${C.reset}`);
-  const url = `https://github.com/${REPO}/archive/refs/heads/${REF}.tar.gz`;
+  const ref = await resolveRef();
+  console.log(`${C.dim}Fetching template ${REPO}@${ref}…${C.reset}`);
+  const url = `https://github.com/${REPO}/archive/${ref}.tar.gz`;
   let res;
   try {
     res = await fetch(url);
@@ -94,6 +115,13 @@ async function main() {
     pkg.version = "0.1.0";
     delete pkg.description;
     writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
+  }
+
+  // Initialize a fresh git repo (best-effort — skip if git is unavailable).
+  try {
+    execFileSync("git", ["init", "-q"], { cwd: dest, stdio: "ignore" });
+  } catch {
+    // no git — not fatal
   }
 
   console.log(`\n${C.green}✓${C.reset} Created ${C.bold}${name}${C.reset} ${C.dim}(${dest})${C.reset}\n`);

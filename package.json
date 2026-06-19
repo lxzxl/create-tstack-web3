@@ -1,6 +1,6 @@
 {
   "name": "create-tstack-web3",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Scaffold a TanStack Start + wagmi + Hardhat 3 web3 app — typed end-to-end.",
   "type": "module",
   "bin": {
