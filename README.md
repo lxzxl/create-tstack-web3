@@ -33,6 +33,26 @@ Windows 10+ ships it too).
 
 - `TEMPLATE_REF=<branch|tag>` — scaffold from a specific template ref (default: the latest release tag, then `main`).
 
+## Releasing
+
+Publishing is automated via GitHub Actions ([`.github/workflows/publish.yml`](.github/workflows/publish.yml))
+on every GitHub Release — no manual `npm publish`, no OTP.
+
+**One-time npm setup** (token-less, via OIDC Trusted Publishing): on npmjs.com →
+this package → **Settings → Trusted Publisher** → **GitHub Actions**, repository
+`lxzxl/create-tstack-web3`, workflow `publish.yml`.
+
+**To release:**
+
+```bash
+# bump "version" in package.json, then:
+git commit -am "release: vX.Y.Z" && git push
+gh release create vX.Y.Z --generate-notes   # → CI publishes to npm (with provenance)
+```
+
+> Prefer a token? Create an npm **Automation** token (bypasses 2FA), add it as the
+> `NPM_TOKEN` repo secret, and uncomment `NODE_AUTH_TOKEN` in the workflow.
+
 ## License
 
 MIT

@@ -1,0 +1,46 @@
+name: Publish to npm
+
+# Publishes on every GitHub Release. No manual `npm publish`, no OTP.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # OIDC trusted publishing + provenance (no token needed)
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Version matches the release tag
+        run: |
+          PKG=$(node -p "require('./package.json').version")
+          TAG=${GITHUB_REF_NAME#v}
+          test "$PKG" = "$TAG" || { echo "package.json ($PKG) != tag ($TAG)"; exit 1; }
+
+      - name: Sanity check
+        run: node --check index.mjs
+
+      # OIDC trusted publishing requires a recent npm.
+      - name: Upgrade npm
+        run: npm install -g npm@latest
+
+      - name: Publish
+        run: npm publish
+        # Auth is via OIDC trusted publishing — configure it once on npmjs.com
+        # (package → Settings → Trusted Publisher → GitHub Actions). No secret needed.
+        #
+        # Token alternative: create an npm "Automation" token (bypasses 2FA), add it
+        # as the NPM_TOKEN repo secret, and uncomment:
+        # env:
+        #   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
